@@ -208,6 +208,42 @@
   <style>body { box-sizing: border-box; }</style>
  </head>
  <body class="h-full bg-gray-50">
+  <!-- Firebase Auth Overlay -->
+  <div id="authOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-[100] flex items-center justify-center fade-in">
+    <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl relative overflow-hidden">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-display font-bold text-gray-800">Welcome to Traveloop</h2>
+        <p class="text-gray-500 mt-2 text-sm">Sign in to plan your next adventure</p>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" id="authEmail" class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="you@example.com">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" id="authPassword" class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="••••••••">
+        </div>
+        <div id="authError" class="text-red-500 text-sm hidden text-center"></div>
+        <div class="flex gap-3 pt-2">
+          <button id="btnLogin" class="flex-1 btn-primary text-white py-3 rounded-lg font-medium shadow-lg">Login</button>
+          <button id="btnSignup" class="flex-1 bg-white text-emerald-600 border-2 border-emerald-600 py-3 rounded-lg font-medium hover:bg-emerald-50 transition-colors">Sign Up</button>
+        </div>
+        <div class="relative py-4">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-200"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+        <button id="btnGoogle" class="w-full bg-white border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-3">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google">
+          Google Sign In
+        </button>
+      </div>
+    </div>
+  </div>
   <div id="app" class="h-full w-full flex overflow-hidden">
    <!-- Mobile Overlay -->
    <div id="mobileOverlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-40 hidden" onclick="toggleSidebar()"></div><!-- Sidebar -->
@@ -961,5 +997,88 @@ function quickAddFromCity(city) {
 renderCities(cities);
 lucide.createIcons();
 </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f95e0a4201f3a48',t:'MTc3ODM4Mzk1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f95e0a4201f3a48',t:'MTc3ODM4Mzk1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  // TODO: Replace with your actual Firebase project config
+  const firebaseConfig = {
+    apiKey: "AIzaSyCybgIGFGU50Oy_PHe7Y9SFMlK64wlQVOs",
+    authDomain: "traveloop-d04fe.firebaseapp.com",
+    projectId: "traveloop-d04fe",
+    storageBucket: "traveloop-d04fe.firebasestorage.app",
+    messagingSenderId: "842010946141",
+    appId: "1:842010946141:web:17e123b45999be798e3bb4",
+    measurementId: "G-GGL7TSB2ZY"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  setPersistence(auth, browserLocalPersistence);
+
+  const authOverlay = document.getElementById('authOverlay');
+  const emailInput = document.getElementById('authEmail');
+  const passwordInput = document.getElementById('authPassword');
+  const errorMsg = document.getElementById('authError');
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.classList.remove('hidden');
+  }
+
+  document.getElementById('btnLogin').addEventListener('click', async () => {
+    errorMsg.classList.add('hidden');
+    try {
+      await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+    } catch (error) {
+      showError(error.message);
+    }
+  });
+
+  document.getElementById('btnSignup').addEventListener('click', async () => {
+    errorMsg.classList.add('hidden');
+    try {
+      await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+    } catch (error) {
+      showError(error.message);
+    }
+  });
+
+  document.getElementById('btnGoogle').addEventListener('click', async () => {
+    errorMsg.classList.add('hidden');
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      showError(error.message);
+    }
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      authOverlay.classList.add('hidden');
+      const userEmails = document.querySelectorAll('.text-sm.font-medium');
+      if (userEmails.length > 0) {
+        userEmails.forEach(el => {
+          if(el.textContent === 'traveler@email.com') el.textContent = user.email;
+        });
+      }
+      if (!document.getElementById('btnLogout')) {
+        const profilePage = document.querySelector('#page-profile .space-y-4');
+        if (profilePage) {
+          const logoutDiv = document.createElement('div');
+          logoutDiv.className = 'flex justify-center mt-6 pt-4 border-t';
+          logoutDiv.innerHTML = '<button id="btnLogout" class="text-red-500 font-medium hover:underline">Sign Out from Traveloop</button>';
+          profilePage.appendChild(logoutDiv);
+          document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
+        }
+      }
+    } else {
+      authOverlay.classList.remove('hidden');
+    }
+  });
+</script>
+</body>
 </html>
