@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Traveloop</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+   <script>tailwind.config = { darkMode: 'class' }</script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
-  <style>
+   <style>
         * { box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; margin: 0; background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 50%, #fef3c7 100%); }
+        body { font-family: 'DM Sans', sans-serif; margin: 0; background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 50%, #fef3c7 100%); transition: background 0.4s ease, color 0.4s ease; }
         .font-display { font-family: 'Playfair Display', serif; }
         
         /* Animations */
@@ -206,6 +207,77 @@
         }
     </style>
   <style>body { box-sizing: border-box; }</style>
+    <style>
+    /* ===== DARK MODE OVERRIDES ===== */
+    html.dark body { color: #e2e8f0; }
+    html.dark .bg-white { background-color: #1e293b !important; }
+    html.dark .bg-gray-50 { background-color: #0f172a !important; }
+    html.dark .border-b { border-color: #334155 !important; }
+    html.dark .border { border-color: #334155 !important; }
+    html.dark .text-gray-800, html.dark .text-gray-700 { color: #e2e8f0 !important; }
+    html.dark .text-gray-600 { color: #94a3b8 !important; }
+    html.dark .text-gray-500 { color: #94a3b8 !important; }
+    html.dark .text-gray-400 { color: #64748b !important; }
+    html.dark .hover\:bg-gray-100:hover { background-color: #334155 !important; }
+    html.dark .hover\:bg-gray-50:hover { background-color: #1e293b !important; }
+    html.dark .stat-card {
+      background: linear-gradient(135deg, rgba(30,41,59,0.95), rgba(30,41,59,0.8)) !important;
+      border: 1px solid rgba(100,116,139,0.3) !important;
+    }
+    html.dark .stat-card:hover {
+      background: linear-gradient(135deg, rgba(51,65,85,1), rgba(51,65,85,0.9)) !important;
+    }
+    html.dark .trip-card {
+      background: linear-gradient(135deg, rgba(30,41,59,0.95), rgba(15,23,42,0.9)) !important;
+      border-color: rgba(100,116,139,0.3) !important;
+    }
+    html.dark .trip-card:hover {
+      border-color: rgba(16,185,129,0.5) !important;
+      background: linear-gradient(135deg, rgba(51,65,85,1), rgba(30,41,59,1)) !important;
+    }
+    html.dark .city-card {
+      background: linear-gradient(135deg, rgba(30,41,59,0.95), rgba(15,23,42,0.85)) !important;
+      border-color: rgba(100,116,139,0.25) !important;
+    }
+    html.dark .city-card:hover {
+      border-color: rgba(16,185,129,0.5) !important;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4) !important;
+    }
+    html.dark input, html.dark textarea, html.dark select {
+      background-color: #0f172a !important;
+      color: #e2e8f0 !important;
+      border-color: #475569 !important;
+    }
+    html.dark input::placeholder, html.dark textarea::placeholder {
+      color: #64748b !important;
+    }
+    html.dark input:focus, html.dark textarea:focus {
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.2) !important;
+    }
+    html.dark #notifPanel {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
+    }
+    html.dark .sidebar {
+      background: linear-gradient(180deg, #042f2e 0%, #022c22 50%, #0c1e3a 100%) !important;
+    }
+    html.dark .card-hover:hover {
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35) !important;
+    }
+    html.dark .bg-gray-200 { background-color: #334155 !important; }
+    html.dark ::-webkit-scrollbar { width: 8px; }
+    html.dark ::-webkit-scrollbar-track { background: #0f172a; }
+    html.dark ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    #themeToggleBtn svg {
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    }
+    #themeToggleBtn:hover svg { transform: rotate(30deg) scale(1.15); }
+    .bg-white, .stat-card, .trip-card, .city-card, .sidebar, input, textarea, select,
+    header, #notifPanel, .card-hover {
+      transition: background-color 0.35s ease, border-color 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+    }
+   </style>
  </head>
  <body class="h-full bg-gray-50">
   <div id="app" class="h-full w-full flex overflow-hidden">
@@ -239,7 +311,8 @@
       <h2 id="pageTitle" class="font-semibold text-gray-800">Dashboard</h2>
      </div>
      <div class="flex items-center gap-2">
-      <button onclick="toggleNotifications()" class="relative p-2 rounded-lg hover:bg-gray-100"> <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i> <span id="notifBadge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span> </button> <button onclick="navigate('create')" class="hidden sm:flex items-center gap-1 bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700"> <i data-lucide="plus" class="w-4 h-4"></i> New Trip </button>
+      <button id="themeToggleBtn" onclick="toggleDarkMode()" class="relative p-2 rounded-lg hover:bg-gray-100 transition-colors duration-300" title="Toggle dark mode"><svg id="sunIcon" class="w-5 h-5 text-amber-500 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg><svg id="moonIcon" class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button>
+       <button onclick="toggleNotifications()" class="relative p-2 rounded-lg hover:bg-gray-100"> <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i> <span id="notifBadge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span> </button> <button onclick="navigate('create')" class="hidden sm:flex items-center gap-1 bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700"> <i data-lucide="plus" class="w-4 h-4"></i> New Trip </button>
      </div>
     </header><!-- Notifications Panel -->
     <div id="notifPanel" class="hidden absolute right-4 top-14 w-80 bg-white rounded-xl shadow-xl border z-50 fade-in">
@@ -443,7 +516,7 @@
          <span class="text-sm text-gray-600">Member Since</span> <span class="text-sm font-medium">2024</span>
         </div>
         <div class="flex justify-between items-center py-3">
-         <span class="text-sm text-gray-600">Theme</span> <span class="text-sm font-medium text-emerald-600">Default</span>
+         <span class="text-sm text-gray-600">Theme</span> <button onclick="toggleDarkMode()" class="text-sm font-medium text-emerald-600 hover:underline cursor-pointer" id="profileThemeLabel">Light</button>
         </div>
        </div>
       </div>
@@ -803,6 +876,42 @@ function quickAddFromCity(city) {
     navigate('create');
     showToast(city + ' added as destination', 'success');
 }
+
+// Dark mode
+function toggleDarkMode() {
+    var html = document.documentElement;
+    var isDark = html.classList.toggle('dark');
+    applyDarkModeUI(isDark);
+    try { localStorage.setItem('traveloop-theme', isDark ? 'dark' : 'light'); } catch(e) {}
+}
+
+function applyDarkModeUI(isDark) {
+    var sunIcon = document.getElementById('sunIcon');
+    var moonIcon = document.getElementById('moonIcon');
+    var profileLabel = document.getElementById('profileThemeLabel');
+    if (isDark) {
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
+        document.body.style.background = 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)';
+    } else {
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+        document.body.style.background = 'linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 50%, #fef3c7 100%)';
+    }
+    if (profileLabel) { profileLabel.textContent = isDark ? 'Dark' : 'Light'; }
+}
+
+// Restore saved theme on load
+(function initTheme() {
+    var saved;
+    try { saved = localStorage.getItem('traveloop-theme'); } catch(e) {}
+    if (saved === 'dark') {
+        document.documentElement.classList.add('dark');
+        applyDarkModeUI(true);
+    } else {
+        applyDarkModeUI(false);
+    }
+})();
 
 // Init explore
 renderCities(cities);
