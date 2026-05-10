@@ -218,6 +218,12 @@
     </div>
     <nav class="flex-1 py-4 overflow-y-auto">
      <a onclick="navigate('dashboard')" class="nav-item active block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="dashboard"> <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard </a> <a onclick="navigate('create')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="create"> <i data-lucide="plus-circle" class="w-4 h-4"></i> Create Trip </a> <a onclick="navigate('trips')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="trips"> <i data-lucide="map" class="w-4 h-4"></i> My Trips </a> <a onclick="navigate('explore')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="explore"> <i data-lucide="compass" class="w-4 h-4"></i> Explore Cities </a> <a onclick="navigate('budget')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="budget"> <i data-lucide="wallet" class="w-4 h-4"></i> Budget Planner </a> <a onclick="navigate('packing')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="packing"> <i data-lucide="check-square" class="w-4 h-4"></i> Packing List </a> <a onclick="navigate('journal')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="journal"> <i data-lucide="book-open" class="w-4 h-4"></i> Trip Journal </a> <a onclick="navigate('shared')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="shared"> <i data-lucide="share-2" class="w-4 h-4"></i> Shared Plans </a> <a onclick="navigate('profile')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="profile"> <i data-lucide="user" class="w-4 h-4"></i> Profile </a>
+     <a onclick="navigate('currency')" 
+class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" 
+data-page="currency">
+<i data-lucide="badge-dollar-sign" class="w-4 h-4"></i>
+Currency Converter
+</a>
     </nav>
     <div class="p-4 border-t border-white border-opacity-10">
      <div class="flex items-center gap-3">
@@ -398,6 +404,71 @@
       <div id="budgetContent" class="space-y-4">
        <p class="text-gray-400 text-sm text-center py-8">Create trips to see budget breakdown here.</p>
       </div>
+      <!-- Currency Converter Page -->
+<div id="page-currency" class="page hidden fade-in">
+    <h3 class="font-display text-2xl font-bold text-gray-800 mb-6">
+        Currency Converter 💱
+    </h3>
+    <div class="bg-white rounded-xl border border-emerald-100 p-6 max-w-xl card-hover">
+        <div class="space-y-5">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Enter Amount
+                </label>
+                <input
+                    type="number"
+                    id="currencyAmount"
+                    placeholder="Enter amount"
+                    class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                >
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        From
+                    </label>
+                    <select
+                        id="fromCurrency"
+                        class="w-full border rounded-lg px-4 py-3 text-sm"
+                    >
+                        <option value="USD">🇺🇸 USD</option>
+                        <option value="INR">🇮🇳 INR</option>
+                        <option value="EUR">🇪🇺 EUR</option>
+                        <option value="GBP">🇬🇧 GBP</option>
+                        <option value="JPY">🇯🇵 JPY</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        To
+                    </label>
+
+                    <select
+                        id="toCurrency"
+                        class="w-full border rounded-lg px-4 py-3 text-sm"
+                    >
+                        <option value="INR">🇮🇳 INR</option>
+                        <option value="USD">🇺🇸 USD</option>
+                        <option value="EUR">🇪🇺 EUR</option>
+                        <option value="GBP">🇬🇧 GBP</option>
+                        <option value="JPY">🇯🇵 JPY</option>
+                    </select>
+                </div>
+            </div>
+            <button
+                onclick="convertCurrency()"
+                class="btn-primary w-full text-white py-3 rounded-lg font-medium"
+            >
+                Convert Currency
+            </button>
+            <div
+                id="currencyResult"
+                class="text-center text-2xl font-bold text-emerald-700"
+            ></div>
+        </div>
+    </div>
+</div>
      </div><!-- Packing List Page -->
      <div id="page-packing" class="page hidden fade-in">
       <h3 class="font-display text-2xl font-bold text-gray-800 mb-6">Packing Checklist 🎒</h3>
@@ -552,7 +623,18 @@ function navigate(page) {
     var navEl = document.querySelector('[data-page="' + page + '"]');
     if (navEl) navEl.classList.add('active');
 
-    var titles = { dashboard: 'Dashboard', create: 'Create Trip', trips: 'My Trips', explore: 'Explore Cities', budget: 'Budget Planner', packing: 'Packing List', journal: 'Trip Journal', shared: 'Shared Plans', profile: 'Profile' };
+var titles = {
+    dashboard: 'Dashboard',
+    create: 'Create Trip',
+    trips: 'My Trips',
+    explore: 'Explore Cities',
+    budget: 'Budget Planner',
+    currency: 'Currency Converter',
+    packing: 'Packing List',
+    journal: 'Trip Journal',
+    shared: 'Shared Plans',
+    profile: 'Profile'
+};
     document.getElementById('pageTitle').textContent = titles[page] || 'Traveloop';
 
     // Close sidebar on mobile
