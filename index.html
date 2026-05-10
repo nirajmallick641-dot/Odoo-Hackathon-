@@ -6,15 +6,31 @@
   <title>Traveloop</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
+  <script>
+    window.dataSdk = {
+        save: (key, data) => localStorage.setItem(key, JSON.stringify(data)),
+        load: (key) => JSON.parse(localStorage.getItem(key)) || [],
+        update: (key, id, data) => {
+            const list = JSON.parse(localStorage.getItem(key)) || [];
+            const index = list.findIndex(item => item.id === id);
+            if (index !== -1) {
+                list[index] = { ...list[index], ...data };
+                localStorage.setItem(key, JSON.stringify(list));
+            }
+        }
+    };
+    window.elementSdk = {
+        render: (selector, html) => {
+            const el = document.querySelector(selector);
+            if (el) el.innerHTML = html;
+        }
+    };
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
   <style>
         * { box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; margin: 0; background: #0f172a; color: #e2e8f0; overflow-x: hidden; position: relative;}
+        body { font-family: 'DM Sans', sans-serif; margin: 0; background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 50%, #fef3c7 100%); }
         .font-display { font-family: 'Playfair Display', serif; }
-
-   
         
         /* Animations */
         .fade-in { animation: fadeIn 0.5s ease 0.1s both; }
@@ -75,14 +91,10 @@
             opacity: 0;
             transition: all 0.5s ease;
         }
-        .card-hover:hover {
-    transform: translateY(-6px);
-    box-shadow:
-        0 0 25px rgba(16,185,129,0.15),
-        0 0 50px rgba(59,130,246,0.10);
-}
-            
-        
+        .card-hover:hover { 
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
         .card-hover:hover::before {
             opacity: 1;
             transform: translate(50%, 50%);
@@ -102,9 +114,8 @@
             transition: all 0.3s ease;
         }
         .stat-card:hover {
-           background: rgba(15, 23, 42, 0.7);
-backdrop-filter: blur(14px);
-border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(135deg, rgba(255,255,255,1), rgba(255,255,255,0.9));
+            transform: translateY(-6px);
         }
         
         .toast { 
@@ -114,11 +125,10 @@ border: 1px solid rgba(255,255,255,0.08);
         @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }
         
-.sidebar {
-    background: linear-gradient(180deg, #020617 0%, #111827 50%, #0f172a 100%);
-    border-right: 1px solid rgba(255,255,255,0.06);
-    backdrop-filter: blur(20px);
-}
+        .sidebar { 
+            transition: transform 0.3s ease;
+            background: linear-gradient(180deg, #065f46 0%, #064e3b 50%, #0d3b66 100%);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.2);
         }
         .sidebar::after {
             content: '';
@@ -148,18 +158,8 @@ border: 1px solid rgba(255,255,255,0.08);
         }
         
         /* Input styling */
-        input,
-textarea,
-select {
-    background: rgba(15,23,42,0.8);
-    border: 1px solid rgba(255,255,255,0.08);
-    color: white;
-}
-
-input::placeholder,
-textarea::placeholder {
-    color: #94a3b8;
-}
+        input, textarea, select {
+            transition: all 0.3s ease;
         }
         input:focus, textarea:focus {
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
@@ -188,16 +188,15 @@ textarea::placeholder {
             transition: all 0.3s ease;
         }
         .trip-card:hover {
-            background: rgba(15, 23, 42, 0.7);
-backdrop-filter: blur(14px);
-border: 1px solid rgba(255,255,255,0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+            background: linear-gradient(135deg, rgba(255,255,255,1), rgba(240,253,250,1));
         }
         
         /* City grid */
         .city-card {
-            background: rgba(15, 23, 42, 0.7);
-backdrop-filter: blur(14px);
-border: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,253,250,0.8));
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .city-card:hover {
             border-color: rgba(16, 185, 129, 0.4);
@@ -224,92 +223,23 @@ border: 1px solid rgba(255,255,255,0.08);
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-  <style>body { box-sizing: border-box; }
-  /* Animated Dark Background */
-
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(16,185,129,0.18), transparent 25%),
-        radial-gradient(circle at 80% 30%, rgba(59,130,246,0.18), transparent 25%),
-        radial-gradient(circle at 50% 80%, rgba(168,85,247,0.18), transparent 25%);
-    animation: moveBg 12s ease-in-out infinite alternate;
-    z-index: -2;
-}
-
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    z-index: -1;
-}
-
-@keyframes moveBg {
-    0% {
-        transform: scale(1) translateY(0px);
-    }
-    100% {
-        transform: scale(1.2) translateY(-20px);
-    }
-}
-   .particles {
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-    z-index: -1;
-}
-
-.particles::before,
-.particles::after {
-    content: "";
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    background: rgba(16,185,129,0.12);
-    border-radius: 50%;
-    filter: blur(80px);
-    animation: floatParticle 15s infinite alternate;
-}
-
-.particles::after {
-    background: rgba(59,130,246,0.12);
-    right: 10%;
-    top: 20%;
-    animation-duration: 18s;
-}
-
-@keyframes floatParticle {
-    from {
-        transform: translateY(0px) translateX(0px);
-    }
-    to {
-        transform: translateY(-60px) translateX(40px);
-    }
-}
-  </style>
+  <style>body { box-sizing: border-box; }</style>
  </head>
  <body class="h-full bg-gray-50">
-  <div class="particles"></div>
   <!-- Firebase Auth Overlay -->
   <div id="authOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-[100] flex items-center justify-center fade-in">
     <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl relative overflow-hidden">
       <div class="text-center mb-8">
-        <h2 class="text-3xl font-display font-bold text-white">Welcome to Traveloop</h2>
-        <p class="text-slate-400 mt-2 text-sm">Sign in to plan your next adventure</p>
+        <h2 class="text-3xl font-display font-bold text-gray-800">Welcome to Traveloop</h2>
+        <p class="text-gray-500 mt-2 text-sm">Sign in to plan your next adventure</p>
       </div>
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-slate-200 mb-1">Email</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input type="email" id="authEmail" class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="you@example.com">
         </div>
         <div>
-          <label class="block text-sm font-medium text-slate-200 mb-1">Password</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
           <input type="password" id="authPassword" class="w-full border rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="••••••••">
         </div>
         <div id="authError" class="text-red-500 text-sm hidden text-center"></div>
@@ -322,10 +252,10 @@ body::after {
             <div class="w-full border-t border-gray-200"></div>
           </div>
           <div class="relative flex justify-center text-sm">
-            <span class="px-2 bg-white text-slate-400">Or continue with</span>
+            <span class="px-2 bg-white text-gray-500">Or continue with</span>
           </div>
         </div>
-        <button id="btnGoogle" class="w-full bg-white border border-gray-300 text-slate-200 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-3">
+        <button id="btnGoogle" class="w-full bg-white border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-3">
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google">
           Google Sign In
         </button>
@@ -341,7 +271,7 @@ body::after {
      <p id="sidebarTagline" class="text-xs text-emerald-200 mt-1">Plan. Explore. Share.</p>
     </div>
     <nav class="flex-1 py-4 overflow-y-auto">
-     <a onclick="navigate('dashboard')" class="nav-item active block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="dashboard"> <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard </a> <a onclick="navigate('create')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="create"> <i data-lucide="plus-circle" class="w-4 h-4"></i> Create Trip </a> <a onclick="navigate('trips')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="trips"> <i data-lucide="map" class="w-4 h-4"></i> My Trips </a> <a onclick="navigate('explore')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="explore"> <i data-lucide="compass" class="w-4 h-4"></i> Explore Cities </a> <a onclick="navigate('budget')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="budget"> <i data-lucide="wallet" class="w-4 h-4"></i> Budget Planner </a> <a onclick="navigate('packing')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="packing"> <i data-lucide="check-square" class="w-4 h-4"></i> Packing List </a> <a onclick="navigate('journal')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="journal"> <i data-lucide="book-open" class="w-4 h-4"></i> Trip Journal </a> <a onclick="navigate('shared')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="shared"> <i data-lucide="share-2" class="w-4 h-4"></i> Shared Plans </a> <a onclick="navigate('profile')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="profile"> <i data-lucide="user" class="w-4 h-4"></i> Profile </a>
+     <a onclick="navigate('dashboard')" class="nav-item active block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="dashboard"> <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard </a> <a onclick="navigate('create')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="create"> <i data-lucide="plus-circle" class="w-4 h-4"></i> Create Trip </a> <a onclick="navigate('trips')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="trips"> <i data-lucide="map" class="w-4 h-4"></i> My Trips </a> <a onclick="navigate('bookings')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="bookings"> <i data-lucide="ticket" class="w-4 h-4"></i> Bookings </a> <a onclick="navigate('explore')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="explore"> <i data-lucide="compass" class="w-4 h-4"></i> Explore Cities </a> <a onclick="navigate('budget')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="budget"> <i data-lucide="wallet" class="w-4 h-4"></i> Budget Planner </a> <a onclick="navigate('packing')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="packing"> <i data-lucide="check-square" class="w-4 h-4"></i> Packing List </a> <a onclick="navigate('journal')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="journal"> <i data-lucide="book-open" class="w-4 h-4"></i> Trip Journal </a> <a onclick="navigate('shared')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="shared"> <i data-lucide="share-2" class="w-4 h-4"></i> Shared Plans </a> <a onclick="navigate('profile')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="profile"> <i data-lucide="user" class="w-4 h-4"></i> Profile </a>
      <a onclick="navigate('currency')" 
 class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" 
 data-page="currency">
@@ -363,7 +293,7 @@ Currency Converter
    </aside><!-- Main Content -->
    <div class="flex-1 flex flex-col h-full overflow-hidden">
     <!-- Top Bar -->
-    <header class="bg-slate-900 border-b border-slate-800 ...">
+    <header class="bg-white border-b px-4 lg:px-6 py-3 flex items-center justify-between shrink-0">
      <div class="flex items-center gap-3">
       <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100"> <i data-lucide="menu" class="w-5 h-5"></i> </button>
       <h2 id="pageTitle" class="font-semibold text-gray-800">Dashboard</h2>
@@ -411,7 +341,7 @@ Currency Converter
      <div id="page-dashboard" class="page fade-in">
       <div class="mb-6">
        <h3 class="font-display text-2xl font-bold text-gray-800">Good to see you! 👋</h3>
-       <p class="text-slate-400 mt-1">Here's your travel overview</p>
+       <p class="text-gray-500 mt-1">Here's your travel overview</p>
       </div>
 
       <!-- Custom Travel Journey Animation -->
@@ -672,6 +602,31 @@ Currency Converter
        <p class="text-gray-400 text-sm text-center py-8">Create trips to see budget breakdown here.</p>
       </div>
 </div>
+      <!-- Bookings Page -->
+      <div id="page-bookings" class="page hidden fade-in">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <h3 class="font-display text-2xl font-bold text-gray-800">Travel Bookings 🎫</h3>
+              <div class="flex bg-gray-100 p-1 rounded-lg">
+                  <button onclick="toggleBookingTab('flights')" id="tab-flights" class="flex-1 sm:px-6 py-2 rounded-md text-sm font-semibold transition-all bg-white text-emerald-700 shadow-sm">Flights ✈️</button>
+                  <button onclick="toggleBookingTab('hotels')" id="tab-hotels" class="flex-1 sm:px-6 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-gray-700">Hotels 🏨</button>
+              </div>
+          </div>
+          
+          <!-- Flights Section -->
+          <div id="bookings-flights" class="block">
+              <div id="flightsContent" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <p class="text-gray-400 text-sm col-span-full text-center py-12 bg-white rounded-xl border border-gray-100">Plan a trip to see flight options here.</p>
+              </div>
+          </div>
+
+          <!-- Hotels Section -->
+          <div id="bookings-hotels" class="hidden">
+              <div id="hotelsContent" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <p class="text-gray-400 text-sm col-span-full text-center py-12 bg-white rounded-xl border border-gray-100">Plan a trip to see hotel options here.</p>
+              </div>
+          </div>
+      </div>
+
       <!-- Currency Converter Page -->
 <div id="page-currency" class="page hidden fade-in">
     <h3 class="font-display text-2xl font-bold text-gray-800 mb-6">
@@ -766,20 +721,22 @@ Currency Converter
       <div class="max-w-5xl mx-auto">
         <!-- Profile Header -->
         <div class="bg-white rounded-t-2xl border-x border-t border-gray-200 overflow-hidden relative">
-          <div class="h-40 bg-gradient-to-r from-emerald-500 to-teal-400 relative">
-            <button class="absolute top-4 right-4 bg-black/20 hover:bg-black/30 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 transition-colors">
+          <div id="profileCover" class="h-40 bg-gradient-to-r from-emerald-500 to-teal-400 relative bg-cover bg-center">
+            <button onclick="document.getElementById('coverUpload').click()" class="absolute top-4 right-4 bg-black/20 hover:bg-black/30 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 transition-colors">
               <i data-lucide="camera" class="w-4 h-4"></i> <span class="hidden sm:inline">Change Cover</span>
             </button>
+            <input type="file" id="coverUpload" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'cover')">
           </div>
           <div class="px-6 pb-6 relative">
             <div class="flex justify-between items-end -mt-16 mb-4">
-              <div class="relative group cursor-pointer rounded-full p-1 bg-white">
-                <div class="w-28 h-28 rounded-full bg-emerald-100 flex items-center justify-center text-4xl overflow-hidden shadow-sm border border-gray-100">
+              <div onclick="document.getElementById('pfpUpload').click()" class="relative group cursor-pointer rounded-full p-1 bg-white">
+                <div id="profileAvatar" class="w-28 h-28 rounded-full bg-emerald-100 flex items-center justify-center text-4xl overflow-hidden shadow-sm border border-gray-100 bg-cover bg-center">
                   <span id="displayAvatar" class="font-bold text-emerald-600">T</span>
                 </div>
                 <div class="absolute inset-1 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <i data-lucide="camera" class="w-6 h-6 text-white"></i>
                 </div>
+                <input type="file" id="pfpUpload" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'pfp')">
               </div>
               <button onclick="toggleProfileEdit()" id="editProfileBtn" class="bg-white border shadow-sm hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
                 <i data-lucide="edit-2" class="w-4 h-4"></i> <span id="editProfileText">Edit Profile</span>
@@ -929,6 +886,52 @@ var defaultConfig = {
     secondary_color: '#fbbf24'
 };
 
+// --- LOCAL MOCK SDKS ---
+window.dataSdk = {
+    init: async function(handler) {
+        this.handler = handler;
+        const stored = localStorage.getItem('traveloop_data');
+        this.data = stored ? JSON.parse(stored) : [];
+        if(this.handler) this.handler.onDataChanged(this.data);
+        return { isOk: true };
+    },
+    save: function() {
+        localStorage.setItem('traveloop_data', JSON.stringify(this.data));
+        if(this.handler) this.handler.onDataChanged(this.data);
+    },
+    create: async function(item) {
+        item.__backendId = Date.now().toString() + Math.random().toString().substr(2, 5);
+        this.data.push(item);
+        this.save();
+        return { isOk: true, data: item };
+    },
+    update: async function(item) {
+        const index = this.data.findIndex(i => i.__backendId === item.__backendId);
+        if(index !== -1) {
+            this.data[index] = item;
+            this.save();
+            return { isOk: true };
+        }
+        return { isOk: false };
+    },
+    delete: async function(item) {
+        this.data = this.data.filter(i => i.__backendId !== item.__backendId);
+        this.save();
+        return { isOk: true };
+    }
+};
+
+window.elementSdk = {
+    init: function(config) {
+        this.config = config;
+        if(config.onConfigChange) config.onConfigChange(config.defaultConfig);
+    },
+    setConfig: function(newConf) {
+        if(this.config && this.config.onConfigChange) this.config.onConfigChange(Object.assign({}, this.config.defaultConfig, newConf));
+    }
+};
+// -----------------------
+
 window.elementSdk.init({
     defaultConfig: defaultConfig,
     onConfigChange: async function(config) {
@@ -989,7 +992,7 @@ function navigate(page) {
     var navEl = document.querySelector('[data-page="' + page + '"]');
     if (navEl) navEl.classList.add('active');
 
-var titles = {dashboard: 'Dashboard',create: 'Create Trip',trips: 'My Trips',explore: 'Explore Cities',budget: 'Budget Planner',currency: 'Currency Converter',packing: 'Packing List',journal: 'Trip Journal',shared: 'Shared Plans',profile: 'Profile'};
+var titles = {dashboard: 'Dashboard',create: 'Create Trip',trips: 'My Trips',bookings: 'Travel Bookings',explore: 'Explore Cities',budget: 'Budget Planner',currency: 'Currency Converter',packing: 'Packing List',journal: 'Trip Journal',shared: 'Shared Plans',profile: 'Profile'};
     document.getElementById('pageTitle').textContent = titles[page] || 'Traveloop';
 
     // Close sidebar on mobile
@@ -1218,6 +1221,94 @@ function refreshUI() {
         }).join('');
     }
 
+    // Bookings Page Rendering
+    var flightsEl = document.getElementById('flightsContent');
+    var hotelsEl = document.getElementById('hotelsContent');
+    
+    if (allTrips.length === 0) {
+        if(flightsEl) flightsEl.innerHTML = '<p class="text-gray-400 text-sm col-span-full text-center py-12 bg-white rounded-xl border border-gray-100">Plan a trip to see flight options here.</p>';
+        if(hotelsEl) hotelsEl.innerHTML = '<p class="text-gray-400 text-sm col-span-full text-center py-12 bg-white rounded-xl border border-gray-100">Plan a trip to see hotel options here.</p>';
+    } else {
+        // Generate Flights
+        if(flightsEl) flightsEl.innerHTML = allTrips.map(function(t, i) {
+            var airlines = ['SkyHigh Airlines', 'Oceanic Flights', 'Global Air', 'Nimbus Jet'];
+            var airline = airlines[i % airlines.length];
+            var price = Math.floor(Math.random() * 400) + 150;
+            var time1 = Math.floor(Math.random() * 8 + 6) + ":00 AM";
+            var time2 = Math.floor(Math.random() * 8 + 1) + ":30 PM";
+            return `
+            <div class="bg-white rounded-xl border p-5 card-hover shadow-sm">
+                <div class="flex justify-between items-center mb-4 border-b pb-4">
+                    <div>
+                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md uppercase tracking-wider">${airline}</span>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xl font-bold text-gray-800">$${price}</p>
+                        <p class="text-xs text-gray-500">Round trip</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="text-center">
+                        <p class="text-lg font-bold text-gray-800">HOME</p>
+                        <p class="text-xs text-gray-500">${time1}</p>
+                    </div>
+                    <div class="flex-1 flex flex-col items-center px-4">
+                        <p class="text-xs text-gray-400 mb-1">Direct • 4h 20m</p>
+                        <div class="w-full border-t-2 border-dashed border-gray-200 relative">
+                            <i data-lucide="plane" class="w-4 h-4 text-emerald-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-lg font-bold text-gray-800 uppercase">${t.destination.substring(0,3)}</p>
+                        <p class="text-xs text-gray-500">${time2}</p>
+                    </div>
+                </div>
+                <button onclick="showToast('Flight booked successfully!', 'success')" class="w-full py-2.5 bg-gray-50 hover:bg-emerald-50 text-emerald-600 font-semibold rounded-lg text-sm border border-emerald-100 transition-colors">Book Flight</button>
+            </div>`;
+        }).join('');
+
+        // Generate Hotels
+        if(hotelsEl) hotelsEl.innerHTML = allTrips.map(function(t, i) {
+            var hotelNames = ['The Grand', 'Cozy Stay', 'Royal Suites', 'Sunset Inn'];
+            var hotelName = hotelNames[i % hotelNames.length] + ' ' + t.destination;
+            var price = Math.floor(Math.random() * 150) + 80;
+            var images = [
+                'https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=500&q=80',
+                'https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=500&q=80'
+            ];
+            var imgUrl = images[i % images.length];
+            return `
+            <div class="bg-white rounded-xl border overflow-hidden card-hover shadow-sm flex flex-col">
+                <div class="h-40 bg-gray-200 relative bg-cover bg-center" style="background-image: url('${imgUrl}')">
+                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md flex items-center gap-1">
+                        <i data-lucide="star" class="w-3 h-3 text-amber-500 fill-amber-500"></i>
+                        <span class="text-xs font-bold text-gray-700">4.${Math.floor(Math.random()*5)+5}</span>
+                    </div>
+                </div>
+                <div class="p-4 flex-1 flex flex-col">
+                    <h4 class="font-bold text-gray-800 text-lg mb-1">${hotelName}</h4>
+                    <p class="text-xs text-gray-500 flex items-center gap-1 mb-3"><i data-lucide="map-pin" class="w-3 h-3"></i> ${t.destination} City Center</p>
+                    
+                    <div class="flex items-end justify-between mt-auto mb-4">
+                        <div>
+                            <p class="text-xl font-bold text-emerald-600">$${price}</p>
+                            <p class="text-xs text-gray-500">per night</p>
+                        </div>
+                        <div class="flex gap-2 text-gray-400">
+                            <i data-lucide="wifi" class="w-4 h-4"></i>
+                            <i data-lucide="coffee" class="w-4 h-4"></i>
+                            <i data-lucide="tv" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <button onclick="showToast('Hotel room booked successfully!', 'success')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm transition-colors shadow-sm">Reserve Room</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
     // Re-render icons
     lucide.createIcons();
 }
@@ -1347,6 +1438,68 @@ lucide.createIcons();
       showError(error.message);
     }
   });
+
+  // Image Upload Logic
+  function handleImageUpload(event, type) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        if (type === 'cover') {
+          document.getElementById('profileCover').style.backgroundImage = `url(${dataUrl})`;
+          localStorage.setItem('traveloop_cover', dataUrl);
+        } else if (type === 'pfp') {
+          document.getElementById('profileAvatar').style.backgroundImage = `url(${dataUrl})`;
+          document.getElementById('displayAvatar').style.display = 'none'; // hide text
+          localStorage.setItem('traveloop_pfp', dataUrl);
+        }
+        if(typeof showToast === 'function') showToast('Image updated successfully!', 'success');
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // Load saved images on startup
+  function loadSavedImages() {
+    const savedCover = localStorage.getItem('traveloop_cover');
+    const savedPfp = localStorage.getItem('traveloop_pfp');
+    
+    if (savedCover) {
+      document.getElementById('profileCover').style.backgroundImage = `url(${savedCover})`;
+    }
+    if (savedPfp) {
+      document.getElementById('profileAvatar').style.backgroundImage = `url(${savedPfp})`;
+      const avatarText = document.getElementById('displayAvatar');
+      if(avatarText) avatarText.style.display = 'none';
+    }
+  }
+
+  // Ensure images are loaded when the script runs
+  loadSavedImages();
+
+  function toggleBookingTab(tab) {
+    const flightsTab = document.getElementById('tab-flights');
+    const hotelsTab = document.getElementById('tab-hotels');
+    const flightsContent = document.getElementById('bookings-flights');
+    const hotelsContent = document.getElementById('bookings-hotels');
+
+    if (tab === 'flights') {
+        flightsTab.className = "flex-1 sm:px-6 py-2 rounded-md text-sm font-semibold transition-all bg-white text-emerald-700 shadow-sm";
+        hotelsTab.className = "flex-1 sm:px-6 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-gray-700";
+        flightsContent.classList.remove('hidden');
+        flightsContent.classList.add('block');
+        hotelsContent.classList.add('hidden');
+        hotelsContent.classList.remove('block');
+    } else {
+        hotelsTab.className = "flex-1 sm:px-6 py-2 rounded-md text-sm font-semibold transition-all bg-white text-emerald-700 shadow-sm";
+        flightsTab.className = "flex-1 sm:px-6 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-gray-700";
+        hotelsContent.classList.remove('hidden');
+        hotelsContent.classList.add('block');
+        flightsContent.classList.add('hidden');
+        flightsContent.classList.remove('block');
+    }
+  }
 
   function toggleProfileEdit() {
     const viewMode = document.getElementById('profileViewMode');
