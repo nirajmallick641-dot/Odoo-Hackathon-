@@ -674,30 +674,127 @@ Currency Converter
      </div><!-- Profile Page -->
      <div id="page-profile" class="page hidden fade-in">
       <h3 class="font-display text-2xl font-bold text-gray-800 mb-6">Profile &amp; Settings ⚙️</h3>
-      <div class="bg-white rounded-xl border p-6 max-w-lg">
-       <div class="flex items-center gap-4 mb-6">
-        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-2xl font-bold">
-         T
+      
+      <div class="max-w-5xl mx-auto">
+        <!-- Profile Header -->
+        <div class="bg-white rounded-t-2xl border-x border-t border-gray-200 overflow-hidden relative">
+          <div class="h-40 bg-gradient-to-r from-emerald-500 to-teal-400 relative">
+            <button class="absolute top-4 right-4 bg-black/20 hover:bg-black/30 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 transition-colors">
+              <i data-lucide="camera" class="w-4 h-4"></i> <span class="hidden sm:inline">Change Cover</span>
+            </button>
+          </div>
+          <div class="px-6 pb-6 relative">
+            <div class="flex justify-between items-end -mt-16 mb-4">
+              <div class="relative group cursor-pointer rounded-full p-1 bg-white">
+                <div class="w-28 h-28 rounded-full bg-emerald-100 flex items-center justify-center text-4xl overflow-hidden shadow-sm border border-gray-100">
+                  <span id="displayAvatar" class="font-bold text-emerald-600">T</span>
+                </div>
+                <div class="absolute inset-1 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <i data-lucide="camera" class="w-6 h-6 text-white"></i>
+                </div>
+              </div>
+              <button onclick="toggleProfileEdit()" id="editProfileBtn" class="bg-white border shadow-sm hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                <i data-lucide="edit-2" class="w-4 h-4"></i> <span id="editProfileText">Edit Profile</span>
+              </button>
+            </div>
+            <div>
+              <h4 id="displayUserName" class="font-display text-2xl font-bold text-gray-900">Traveler</h4>
+              <p id="displayUserCity" class="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                <i data-lucide="map-pin" class="w-4 h-4"></i> New York, USA
+              </p>
+            </div>
+          </div>
         </div>
-        <div>
-         <h4 class="font-semibold text-lg">Traveler</h4>
-         <p class="text-sm text-gray-500">Explorer since 2024</p>
+
+        <!-- Profile Content -->
+        <div class="bg-gray-50 rounded-b-2xl border border-gray-200 p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Sidebar Stats -->
+          <div class="md:col-span-1 space-y-4">
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+              <h5 class="text-xs uppercase tracking-wider font-semibold text-gray-400 mb-4">Travel Stats</h5>
+              <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600 flex items-center gap-2"><i data-lucide="plane" class="w-4 h-4 text-emerald-500"></i> Trips Created</span> 
+                  <span id="profileTrips" class="text-sm font-bold text-gray-800">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-gray-600 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-emerald-500"></i> Member Since</span> 
+                  <span class="text-sm font-bold text-gray-800">2024</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="logoutContainer" class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 space-y-4">
+              <h5 class="text-xs uppercase tracking-wider font-semibold text-gray-400 mb-2">Settings</h5>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">App Theme</span> 
+                <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-md font-medium">Default</span>
+              </div>
+              <!-- Logout button gets appended here -->
+            </div>
+          </div>
+
+          <!-- Form Area -->
+          <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
+            
+            <!-- Read Only View -->
+            <div id="profileViewMode" class="space-y-6 block">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Full Name</p>
+                  <p id="viewName" class="text-gray-800 font-medium">Traveler</p>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Email Address</p>
+                  <p id="viewEmail" class="text-gray-800 font-medium profile-user-email">traveler@email.com</p>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Contact Number</p>
+                  <p id="viewPhone" class="text-gray-800 font-medium">+1 (555) 123-4567</p>
+                </div>
+                <div>
+                  <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">City</p>
+                  <p id="viewCity" class="text-gray-800 font-medium">New York, USA</p>
+                </div>
+                <div class="sm:col-span-2">
+                  <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Address</p>
+                  <p id="viewAddress" class="text-gray-800 font-medium">123 Travel Avenue, Wanderlust District</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Edit Mode -->
+            <div id="profileEditMode" class="space-y-5 hidden">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                  <input type="text" id="editName" value="Traveler" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                  <input type="email" id="editEmail" disabled value="traveler@email.com" class="w-full border rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-500 outline-none profile-user-email cursor-not-allowed" title="Email is managed by your sign-in provider">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                  <input type="text" id="editPhone" value="+1 (555) 123-4567" placeholder="+1 (123) 456-7890" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  <input type="text" id="editCity" value="New York, USA" placeholder="e.g. London, UK" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <textarea id="editAddress" rows="2" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none resize-none">123 Travel Avenue, Wanderlust District</textarea>
+                </div>
+              </div>
+              <div class="pt-5 border-t flex justify-end gap-3 mt-2">
+                <button onclick="toggleProfileEdit()" class="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+                <button onclick="saveProfile()" class="px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition-colors shadow-sm">Save Changes</button>
+              </div>
+            </div>
+
+          </div>
         </div>
-       </div>
-       <div class="space-y-4">
-        <div class="flex justify-between items-center py-3 border-b">
-         <span class="text-sm text-gray-600">Email</span> <span class="text-sm font-medium">traveler@email.com</span>
-        </div>
-        <div class="flex justify-between items-center py-3 border-b">
-         <span class="text-sm text-gray-600">Trips Created</span> <span id="profileTrips" class="text-sm font-medium">0</span>
-        </div>
-        <div class="flex justify-between items-center py-3 border-b">
-         <span class="text-sm text-gray-600">Member Since</span> <span class="text-sm font-medium">2024</span>
-        </div>
-        <div class="flex justify-between items-center py-3">
-         <span class="text-sm text-gray-600">Theme</span> <span class="text-sm font-medium text-emerald-600">Default</span>
-        </div>
-       </div>
       </div>
      </div>
     </main>
@@ -1163,22 +1260,63 @@ lucide.createIcons();
     }
   });
 
+  function toggleProfileEdit() {
+    const viewMode = document.getElementById('profileViewMode');
+    const editMode = document.getElementById('profileEditMode');
+    const editBtnText = document.getElementById('editProfileText');
+    
+    if(viewMode.classList.contains('hidden')) {
+      viewMode.classList.remove('hidden');
+      editMode.classList.add('hidden');
+      editBtnText.textContent = 'Edit Profile';
+    } else {
+      viewMode.classList.add('hidden');
+      editMode.classList.remove('hidden');
+      editBtnText.textContent = 'Cancel Edit';
+    }
+  }
+
+  function saveProfile() {
+    const name = document.getElementById('editName').value || 'Traveler';
+    const phone = document.getElementById('editPhone').value;
+    const city = document.getElementById('editCity').value;
+    const address = document.getElementById('editAddress').value;
+    
+    document.getElementById('viewName').textContent = name;
+    document.getElementById('displayUserName').textContent = name;
+    document.getElementById('displayAvatar').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('viewPhone').textContent = phone;
+    document.getElementById('viewCity').textContent = city;
+    document.getElementById('displayUserCity').innerHTML = '<i data-lucide="map-pin" class="w-4 h-4"></i> ' + city;
+    document.getElementById('viewAddress').textContent = address;
+    
+    if(window.lucide) window.lucide.createIcons();
+    
+    toggleProfileEdit();
+    if(typeof showToast === 'function') showToast('Profile updated successfully!', 'success');
+  }
+
   onAuthStateChanged(auth, (user) => {
     if (user) {
       authOverlay.classList.add('hidden');
-      const userEmails = document.querySelectorAll('.text-sm.font-medium');
+      const userEmails = document.querySelectorAll('.profile-user-email');
       if (userEmails.length > 0) {
         userEmails.forEach(el => {
-          if(el.textContent === 'traveler@email.com') el.textContent = user.email;
+          if (el.tagName === 'INPUT') {
+            el.value = user.email;
+          } else {
+            el.textContent = user.email;
+          }
         });
       }
       if (!document.getElementById('btnLogout')) {
-        const profilePage = document.querySelector('#page-profile .space-y-4');
-        if (profilePage) {
+        const logoutContainer = document.getElementById('logoutContainer');
+        if (logoutContainer) {
           const logoutDiv = document.createElement('div');
-          logoutDiv.className = 'flex justify-center mt-6 pt-4 border-t';
-          logoutDiv.innerHTML = '<button id="btnLogout" class="text-red-500 font-medium hover:underline">Sign Out from Traveloop</button>';
-          profilePage.appendChild(logoutDiv);
+          logoutDiv.className = 'flex justify-center mt-4 pt-4 border-t border-gray-100';
+          logoutDiv.innerHTML = '<button id="btnLogout" class="text-red-500 text-sm font-medium hover:underline flex items-center gap-2"><i data-lucide="log-out" class="w-4 h-4"></i> Sign Out from Traveloop</button>';
+          logoutContainer.appendChild(logoutDiv);
+          if(window.lucide) window.lucide.createIcons();
           document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
         }
       }
