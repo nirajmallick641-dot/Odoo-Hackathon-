@@ -14,39 +14,7 @@
         body { font-family: 'DM Sans', sans-serif; margin: 0; background: #0f172a; color: #e2e8f0; overflow-x: hidden; position: relative;}
         .font-display { font-family: 'Playfair Display', serif; }
 
-   /* Animated Dark Background */
-
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background:
-        radial-gradient(circle at 20% 20%, rgba(16,185,129,0.18), transparent 25%),
-        radial-gradient(circle at 80% 30%, rgba(59,130,246,0.18), transparent 25%),
-        radial-gradient(circle at 50% 80%, rgba(168,85,247,0.18), transparent 25%);
-    animation: moveBg 12s ease-in-out infinite alternate;
-    z-index: -2;
-}
-
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    z-index: -1;
-}
-
-@keyframes moveBg {
-    0% {
-        transform: scale(1) translateY(0px);
-    }
-    100% {
-        transform: scale(1.2) translateY(-20px);
-    }
-}
+   
         
         /* Animations */
         .fade-in { animation: fadeIn 0.5s ease 0.1s both; }
@@ -107,10 +75,14 @@ body::after {
             opacity: 0;
             transition: all 0.5s ease;
         }
-        .card-hover:hover { 
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-        }
+        .card-hover:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        0 0 25px rgba(16,185,129,0.15),
+        0 0 50px rgba(59,130,246,0.10);
+}
+            
+        
         .card-hover:hover::before {
             opacity: 1;
             transform: translate(50%, 50%);
@@ -252,9 +224,78 @@ border: 1px solid rgba(255,255,255,0.08);
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-  <style>body { box-sizing: border-box; }</style>
+  <style>body { box-sizing: border-box; }
+  /* Animated Dark Background */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(16,185,129,0.18), transparent 25%),
+        radial-gradient(circle at 80% 30%, rgba(59,130,246,0.18), transparent 25%),
+        radial-gradient(circle at 50% 80%, rgba(168,85,247,0.18), transparent 25%);
+    animation: moveBg 12s ease-in-out infinite alternate;
+    z-index: -2;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: -1;
+}
+
+@keyframes moveBg {
+    0% {
+        transform: scale(1) translateY(0px);
+    }
+    100% {
+        transform: scale(1.2) translateY(-20px);
+    }
+}
+   .particles {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.particles::before,
+.particles::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(16,185,129,0.12);
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: floatParticle 15s infinite alternate;
+}
+
+.particles::after {
+    background: rgba(59,130,246,0.12);
+    right: 10%;
+    top: 20%;
+    animation-duration: 18s;
+}
+
+@keyframes floatParticle {
+    from {
+        transform: translateY(0px) translateX(0px);
+    }
+    to {
+        transform: translateY(-60px) translateX(40px);
+    }
+}
+  </style>
  </head>
  <body class="h-full bg-gray-50">
+  <div class="particles"></div>
   <!-- Firebase Auth Overlay -->
   <div id="authOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-95 z-[100] flex items-center justify-center fade-in">
     <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl relative overflow-hidden">
@@ -322,7 +363,7 @@ Currency Converter
    </aside><!-- Main Content -->
    <div class="flex-1 flex flex-col h-full overflow-hidden">
     <!-- Top Bar -->
-    <header class="bg-white border-b px-4 lg:px-6 py-3 flex items-center justify-between shrink-0">
+    <header class="bg-slate-900 border-b border-slate-800 ...">
      <div class="flex items-center gap-3">
       <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100"> <i data-lucide="menu" class="w-5 h-5"></i> </button>
       <h2 id="pageTitle" class="font-semibold text-gray-800">Dashboard</h2>
