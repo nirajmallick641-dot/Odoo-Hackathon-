@@ -5,6 +5,9 @@ Team Members:
         Adit Patel,
           Maharshi Kankotiya
 
+          Solution: https://drive.google.com/file/d/1j5chS3lL1USpD3Alz2bZmpNXI8Is8-7n/view?usp=sharing
+          
+
 
 
 Traveloop is a travel planning website developed to help users organize and manage their trips in a simple and user friendly way. The main goal of this project is to provide an all in one platform where users can create trips, explore destinations, manage budgets, and store travel related information easily. The website is designed with a modern UI, responsive layout, and smooth navigation to improve the overall user experience.
