@@ -1,7 +1,7 @@
 # Odoo-Hackathon-
 Team Members:
     Niraj Mallik,
-      Moksh BHatt,
+      Moksh Bhatt,
         Adit Patel,
           Maharshi Kankotiya
 
