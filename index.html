@@ -868,13 +868,48 @@ function filterCities() {
     var filtered = cities.filter(function(c) { return c.name.toLowerCase().indexOf(q) > -1 || c.country.toLowerCase().indexOf(q) > -1; });
     renderCities(filtered);
 }
-
 function quickAddFromCity(city) {
     document.getElementById('tripDest').value = city;
     navigate('create');
     showToast(city + ' added as destination', 'success');
 }
-
+   async function convertCurrency() {
+    var amount =
+        document.getElementById('currencyAmount').value;
+    var from =
+        document.getElementById('fromCurrency').value;
+    var to =
+        document.getElementById('toCurrency').value;
+    var resultBox =
+        document.getElementById('currencyResult');
+    if (!amount || amount <= 0) {
+        resultBox.innerHTML =
+            '⚠️ Enter valid amount';
+        return;
+    }
+    try {
+        resultBox.innerHTML =
+            '⏳ Converting...';
+        var response = await fetch(
+            'https://api.exchangerate-api.com/v4/latest/' + from
+        );
+        var data = await response.json();
+        var rate = data.rates[to];
+        var converted =
+            (amount * rate).toFixed(2);
+        resultBox.innerHTML =
+            '💱 ' +
+            amount + ' ' + from +
+            ' = ' +
+            converted + ' ' + to;
+        showToast('Currency converted!', 'success');
+    } catch (error) {
+        resultBox.innerHTML =
+            '❌ Conversion failed';
+        showToast('API Error', 'error');
+        console.log(error);
+    }
+}
 // Init explore
 renderCities(cities);
 lucide.createIcons();
