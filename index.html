@@ -291,17 +291,50 @@ Currency Converter
      </div>
     </div>
    </aside><!-- Main Content -->
-   <div class="flex-1 flex flex-col h-full overflow-hidden">
+   <div class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
     <!-- Top Bar -->
-    <header class="bg-white border-b px-4 lg:px-6 py-3 flex items-center justify-between shrink-0">
-     <div class="flex items-center gap-3">
-      <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100"> <i data-lucide="menu" class="w-5 h-5"></i> </button>
-      <h2 id="pageTitle" class="font-semibold text-gray-800">Dashboard</h2>
-     </div>
-     <div class="flex items-center gap-2">
-      <button onclick="toggleNotifications()" class="relative p-2 rounded-lg hover:bg-gray-100"> <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i> <span id="notifBadge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span> </button> <button onclick="navigate('create')" class="hidden sm:flex items-center gap-1 bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700"> <i data-lucide="plus" class="w-4 h-4"></i> New Trip </button>
-     </div>
-    </header><!-- Notifications Panel -->
+    <header class="sticky top-0 z-40 bg-white border-b px-3 sm:px-4 lg:px-6 py-3 flex items-center justify-between w-full">
+
+    <div class="flex items-center gap-2 min-w-0">
+
+        <button onclick="toggleSidebar()"
+            class="lg:hidden p-2 rounded-lg hover:bg-gray-100 shrink-0">
+
+            <i data-lucide="menu" class="w-5 h-5"></i>
+
+        </button>
+
+        <h2 id="pageTitle"
+            class="font-semibold text-gray-800 text-lg sm:text-xl truncate">
+            Dashboard
+        </h2>
+
+    </div>
+
+    <div class="flex items-center gap-2 shrink-0">
+
+        <button onclick="toggleNotifications()"
+            class="relative p-2 rounded-lg hover:bg-gray-100">
+
+            <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+
+            <span id="notifBadge"
+                class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+
+        </button>
+
+        <button onclick="navigate('create')"
+            class="hidden sm:flex items-center gap-1 bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700">
+
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            New Trip
+
+        </button>
+
+    </div>
+
+</header>
+  <!-- Notifications Panel -->
     <div id="notifPanel" class="hidden absolute right-4 top-14 w-80 bg-white rounded-xl shadow-xl border z-50 fade-in">
      <div class="p-4 border-b flex justify-between items-center">
       <h3 class="font-semibold text-sm">Notifications</h3><button onclick="clearNotifications()" class="text-xs text-emerald-600 hover:underline">Clear all</button>
