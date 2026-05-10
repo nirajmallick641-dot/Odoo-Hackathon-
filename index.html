@@ -623,18 +623,7 @@ function navigate(page) {
     var navEl = document.querySelector('[data-page="' + page + '"]');
     if (navEl) navEl.classList.add('active');
 
-var titles = {
-    dashboard: 'Dashboard',
-    create: 'Create Trip',
-    trips: 'My Trips',
-    explore: 'Explore Cities',
-    budget: 'Budget Planner',
-    currency: 'Currency Converter',
-    packing: 'Packing List',
-    journal: 'Trip Journal',
-    shared: 'Shared Plans',
-    profile: 'Profile'
-};
+var titles = {dashboard: 'Dashboard',create: 'Create Trip',trips: 'My Trips',explore: 'Explore Cities',budget: 'Budget Planner',currency: 'Currency Converter',packing: 'Packing List',journal: 'Trip Journal',shared: 'Shared Plans',profile: 'Profile'};
     document.getElementById('pageTitle').textContent = titles[page] || 'Traveloop';
 
     // Close sidebar on mobile
