@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traveloop</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet">
+  <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; margin: 0; background: linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 50%, #fef3c7 100%); }
+        .font-display { font-family: 'Playfair Display', serif; }
+        
+        /* Animations */
+        .fade-in { animation: fadeIn 0.5s ease 0.1s both; }
+        .slide-up { animation: slideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .bounce { animation: bounce 0.6s ease-out; }
+        .pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+        .float { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); } 50% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.4); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        
+        .nav-item { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            position: relative;
+            margin: 0.25rem 0;
+        }
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(180deg, #fbbf24, #f59e0b);
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.3s ease;
+        }
+        .nav-item:hover { 
+            background: rgba(255,255,255,0.15);
+            padding-left: 1.5rem;
+        }
+        .nav-item.active { 
+            background: rgba(255,255,255,0.2);
+            border-left: 3px solid #fbbf24;
+        }
+        .nav-item.active::before {
+            transform: scaleY(1);
+        }
+        
+        .card-hover { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .card-hover::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            transform: translate(0, 0);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        .card-hover:hover { 
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+        .card-hover:hover::before {
+            opacity: 1;
+            transform: translate(50%, 50%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #059669 0%, #0891b2 50%, #2563eb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,1), rgba(255,255,255,0.9));
+            transform: translateY(-6px);
+        }
+        
+        .toast { 
+            animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }
+        
+        .sidebar { 
+            transition: transform 0.3s ease;
+            background: linear-gradient(180deg, #065f46 0%, #064e3b 50%, #0d3b66 100%);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.2);
+        }
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 100% 0%, rgba(255,255,255,0.1), transparent 70%);
+            pointer-events: none;
+        }
+        
+        .overlay { transition: opacity 0.3s ease; }
+        
+        /* Gradient buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        /* Input styling */
+        input, textarea, select {
+            transition: all 0.3s ease;
+        }
+        input:focus, textarea:focus {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            border-color: #10b981 !important;
+        }
+        
+        /* Badge animations */
+        .badge-pulse {
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* Stats box stagger */
+        .stat-card:nth-child(1) { animation: fadeIn 0.5s ease 0.1s both; }
+        .stat-card:nth-child(2) { animation: fadeIn 0.5s ease 0.2s both; }
+        .stat-card:nth-child(3) { animation: fadeIn 0.5s ease 0.3s both; }
+        .stat-card:nth-child(4) { animation: fadeIn 0.5s ease 0.4s both; }
+        
+        /* Trip card gradient */
+        .trip-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,253,250,0.9));
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s ease;
+        }
+        .trip-card:hover {
+            border-color: rgba(16, 185, 129, 0.3);
+            background: linear-gradient(135deg, rgba(255,255,255,1), rgba(240,253,250,1));
+        }
+        
+        /* City grid */
+        .city-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,253,250,0.8));
+            border: 2px solid rgba(16, 185, 129, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .city-card:hover {
+            border-color: rgba(16, 185, 129, 0.4);
+            transform: translateY(-8px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+        }
+        
+        /* Progress bar animation */
+        .progress-bar {
+            background: linear-gradient(90deg, #059669 0%, #10b981 50%, #6ee7b7 100%);
+            animation: progressSlide 1.5s ease-out;
+        }
+        @keyframes progressSlide {
+            from { width: 0 !important; }
+            to { width: var(--progress-width, 100%); }
+        }
+        
+        /* Smooth page transitions */
+        .page {
+            animation: pageSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes pageSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full bg-gray-50">
+  <div id="app" class="h-full w-full flex overflow-hidden">
+   <!-- Mobile Overlay -->
+   <div id="mobileOverlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-40 hidden" onclick="toggleSidebar()"></div><!-- Sidebar -->
+   <aside id="sidebar" class="sidebar fixed lg:relative z-50 w-64 h-full bg-gradient-to-b from-emerald-800 to-teal-900 text-white flex flex-col -translate-x-full lg:translate-x-0">
+    <div class="p-5 border-b border-white border-opacity-10">
+     <h1 class="font-display text-xl font-bold flex items-center gap-2"><span class="text-2xl">✈️</span> <span id="sidebarTitle">Traveloop</span></h1>
+     <p id="sidebarTagline" class="text-xs text-emerald-200 mt-1">Plan. Explore. Share.</p>
+    </div>
+    <nav class="flex-1 py-4 overflow-y-auto">
+     <a onclick="navigate('dashboard')" class="nav-item active block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="dashboard"> <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard </a> <a onclick="navigate('create')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="create"> <i data-lucide="plus-circle" class="w-4 h-4"></i> Create Trip </a> <a onclick="navigate('trips')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="trips"> <i data-lucide="map" class="w-4 h-4"></i> My Trips </a> <a onclick="navigate('explore')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="explore"> <i data-lucide="compass" class="w-4 h-4"></i> Explore Cities </a> <a onclick="navigate('budget')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="budget"> <i data-lucide="wallet" class="w-4 h-4"></i> Budget Planner </a> <a onclick="navigate('packing')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="packing"> <i data-lucide="check-square" class="w-4 h-4"></i> Packing List </a> <a onclick="navigate('journal')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="journal"> <i data-lucide="book-open" class="w-4 h-4"></i> Trip Journal </a> <a onclick="navigate('shared')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="shared"> <i data-lucide="share-2" class="w-4 h-4"></i> Shared Plans </a> <a onclick="navigate('profile')" class="nav-item block px-5 py-3 cursor-pointer flex items-center gap-3 text-sm" data-page="profile"> <i data-lucide="user" class="w-4 h-4"></i> Profile </a>
+    </nav>
+    <div class="p-4 border-t border-white border-opacity-10">
+     <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center text-sm font-bold text-emerald-900">
+       T
+      </div>
+      <div>
+       <p class="text-sm font-medium">Traveler</p>
+       <p class="text-xs text-emerald-300">Explorer</p>
+      </div>
+     </div>
+    </div>
+   </aside><!-- Main Content -->
+   <div class="flex-1 flex flex-col h-full overflow-hidden">
+    <!-- Top Bar -->
+    <header class="bg-white border-b px-4 lg:px-6 py-3 flex items-center justify-between shrink-0">
+     <div class="flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg hover:bg-gray-100"> <i data-lucide="menu" class="w-5 h-5"></i> </button>
+      <h2 id="pageTitle" class="font-semibold text-gray-800">Dashboard</h2>
+     </div>
+     <div class="flex items-center gap-2">
+      <button onclick="toggleNotifications()" class="relative p-2 rounded-lg hover:bg-gray-100"> <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i> <span id="notifBadge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span> </button> <button onclick="navigate('create')" class="hidden sm:flex items-center gap-1 bg-emerald-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700"> <i data-lucide="plus" class="w-4 h-4"></i> New Trip </button>
+     </div>
+    </header><!-- Notifications Panel -->
+    <div id="notifPanel" class="hidden absolute right-4 top-14 w-80 bg-white rounded-xl shadow-xl border z-50 fade-in">
+     <div class="p-4 border-b flex justify-between items-center">
+      <h3 class="font-semibold text-sm">Notifications</h3><button onclick="clearNotifications()" class="text-xs text-emerald-600 hover:underline">Clear all</button>
+     </div>
+     <div id="notifList" class="max-h-64 overflow-y-auto">
+      <div class="p-4 border-b hover:bg-gray-50 flex gap-3">
+       <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+        🎉
+       </div>
+       <div>
+        <p class="text-sm">Welcome to Traveloop! Start planning your first trip.</p>
+        <p class="text-xs text-gray-400 mt-1">Just now</p>
+       </div>
+      </div>
+      <div class="p-4 border-b hover:bg-gray-50 flex gap-3">
+       <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+        💡
+       </div>
+       <div>
+        <p class="text-sm">Tip: Use the budget planner to track expenses per city.</p>
+        <p class="text-xs text-gray-400 mt-1">2 min ago</p>
+       </div>
+      </div>
+      <div class="p-4 hover:bg-gray-50 flex gap-3">
+       <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+        🌍
+       </div>
+       <div>
+        <p class="text-sm">Explore trending destinations in the Explore tab.</p>
+        <p class="text-xs text-gray-400 mt-1">5 min ago</p>
+       </div>
+      </div>
+     </div>
+    </div><!-- Page Content -->
+    <main id="mainContent" class="flex-1 overflow-y-auto p-4 lg:p-6">
+     <!-- Dashboard Page -->
+     <div id="page-dashboard" class="page fade-in">
+      <div class="mb-6">
+       <h3 class="font-display text-2xl font-bold text-gray-800">Good to see you! 👋</h3>
+       <p class="text-gray-500 mt-1">Here's your travel overview</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+       <div class="stat-card rounded-xl p-5 card-hover">
+        <div class="flex items-center justify-between">
+         <div>
+          <p class="text-xs text-gray-500 uppercase tracking-wide font-semibold">Total Trips</p>
+          <p id="statTrips" class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent mt-1">0</p>
+         </div>
+         <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl pulse-glow" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(20, 184, 166, 0.2));">
+          ✈️
+         </div>
+        </div>
+       </div>
+       <div class="stat-card rounded-xl p-5 card-hover">
+        <div class="flex items-center justify-between">
+         <div>
+          <p class="text-xs text-gray-500 uppercase tracking-wide font-semibold">Cities Visited</p>
+          <p id="statCities" class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mt-1">0</p>
+         </div>
+         <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl float" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(34, 197, 94, 0.2));">
+          🏙️
+         </div>
+        </div>
+       </div>
+       <div class="stat-card rounded-xl p-5 card-hover">
+        <div class="flex items-center justify-between">
+         <div>
+          <p class="text-xs text-gray-500 uppercase tracking-wide font-semibold">Total Budget</p>
+          <p id="statBudget" class="text-3xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent mt-1">$0</p>
+         </div>
+         <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl" style="background: linear-gradient(135deg, rgba(217, 119, 6, 0.2), rgba(234, 88, 12, 0.2));">
+          💰
+         </div>
+        </div>
+       </div>
+       <div class="stat-card rounded-xl p-5 card-hover">
+        <div class="flex items-center justify-between">
+         <div>
+          <p class="text-xs text-gray-500 uppercase tracking-wide font-semibold">Upcoming</p>
+          <p id="statUpcoming" class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mt-1">0</p>
+         </div>
+         <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl bounce" style="background: linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(236, 72, 153, 0.2));">
+          📅
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+       <div class="lg:col-span-2 bg-white rounded-xl border border-emerald-100 p-5 card-hover" style="background: linear-gradient(135deg, rgba(240, 253, 250, 0.8), rgba(255, 255, 255, 0.95));">
+        <h4 class="font-display font-bold text-gray-800 mb-4 flex items-center gap-2"><span style="background: linear-gradient(135deg, #059669, #0891b2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Recent Trips</span> 🚀</h4>
+        <div id="recentTrips" class="space-y-3">
+         <p class="text-gray-400 text-sm text-center py-8">No trips yet. Create your first trip!</p>
+        </div>
+       </div>
+       <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-200 p-5 card-hover">
+        <h4 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">✨ Quick Actions</h4>
+        <div class="space-y-2">
+         <button onclick="navigate('create')" class="btn-primary w-full text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-emerald-700 flex items-center justify-center gap-2"> <i data-lucide="plus-circle" class="w-4 h-4"></i> Plan Trip </button> <button onclick="navigate('explore')" class="w-full text-left px-4 py-3 rounded-lg bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 text-sm flex items-center gap-3 border border-blue-200"> <i data-lucide="compass" class="w-4 h-4 text-blue-600"></i> <span class="text-blue-700 font-medium">Explore</span> </button> <button onclick="navigate('packing')" class="w-full text-left px-4 py-3 rounded-lg bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-sm flex items-center gap-3 border border-amber-200"> <i data-lucide="check-square" class="w-4 h-4 text-amber-600"></i> <span class="text-amber-700 font-medium">Packing</span> </button>
+        </div>
+       </div>
+      </div>
+     </div><!-- Create Trip Page -->
+     <div id="page-create" class="page hidden fade-in">
+      <h3 class="font-display text-2xl font-bold text-gray-800 mb-6">Create New Trip ✨</h3>
+      <form id="tripForm" class="bg-white rounded-xl border p-6 max-w-2xl space-y-4">
+       <div>
+        <label for="tripName" class="block text-sm font-medium text-gray-700 mb-1">Trip Name</label> <input type="text" id="tripName" placeholder="Summer Europe Adventure" class="w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+       </div>
+       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+         <label for="tripDest" class="block text-sm font-medium text-gray-700 mb-1">Destination City</label> <input type="text" id="tripDest" placeholder="Paris, Tokyo, Bali..." class="w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+        </div>
+        <div>
+         <label for="tripBudget" class="block text-sm font-medium text-gray-700 mb-1">Budget ($)</label> <input type="number" id="tripBudget" placeholder="2000" class="w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+        </div>
+       </div>
+       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+         <label for="tripStart" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label> <input type="date" id="tripStart" class="w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+        </div>
+        <div>
+         <label for="tripEnd" class="block text-sm font-medium text-gray-700 mb-1">End Date</label> <input type="date" id="tripEnd" class="w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+        </div>
+       </div>
+       <div>
+        <label for="tripActivities" class="block text-sm font-medium text-gray-700 mb-1">Activities (comma separated)</label> <input type="text" id="tripActivities" placeholder="Sightseeing, Food Tour, Museum Visit" class="w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
+       </div>
+       <div>
+        <label for="tripNotes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label> <textarea id="tripNotes" rows="3" placeholder="Any special notes for this trip..." class="w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none resize-none"></textarea>
+       </div>
+       <div class="flex items-center gap-3">
+        <label class="flex items-center gap-2 cursor-pointer"> <input type="checkbox" id="tripShared" class="w-4 h-4 text-emerald-600 rounded"> <span class="text-sm text-gray-700">Share this trip publicly</span> </label>
+       </div><button type="submit" id="createBtn" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-medium hover:bg-emerald-700 flex items-center justify-center gap-2"> <i data-lucide="plus" class="w-4 h-4"></i> Create Trip </button>
+      </form>
+     </div><!-- My Trips Page -->
+     <div id="page-trips" class="page hidden fade-in">
+      <div class="flex items-center justify-between mb-6">
+       <h3 class="font-display text-2xl font-bold text-gray-800">My Trips 🗺️</h3><button onclick="navigate('create')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700 flex items-center gap-1"> <i data-lucide="plus" class="w-4 h-4"></i> Add Trip </button>
+      </div>
+      <div id="tripsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+       <p class="text-gray-400 text-sm col-span-full text-center py-12">No trips found. Start planning!</p>
+      </div>
+     </div><!-- Explore Cities Page -->
+     <div id="page-explore" class="page hidden fade-in">
+      <h3 class="font-display text-2xl font-bold text-gray-800 mb-2">Explore Destinations 🌍</h3>
+      <p class="text-gray-500 mb-4 text-sm">Discover popular cities and activities</p>
+      <div class="mb-4">
+       <input type="text" id="citySearch" placeholder="Search cities..." oninput="filterCities()" class="w-full max-w-md border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+      </div>
+      <div id="cityGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+     </div><!-- Budget Planner Page -->
+     <div id="page-budget" class="page hidden fade-in">
+      <h3 class="font-display text-2xl font-bold text-gray-800 mb-6">Budget Planner 💰</h3>
+      <div id="budgetContent" class="space-y-4">
+       <p class="text-gray-400 text-sm text-center py-8">Create trips to see budget breakdown here.</p>
+      </div>
+     </div><!-- Packing List Page -->
+     <div id="page-packing" class="page hidden fade-in">
+      <h3 class="font-display text-2xl font-bold text-gray-800 mb-6">Packing Checklist 🎒</h3>
+      <div class="bg-white rounded-xl border p-5 max-w-xl">
+       <div class="flex gap-2 mb-4">
+        <input type="text" id="packingInput" placeholder="Add item..." class="flex-1 border rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500"> <button onclick="addPackingItem()" class="bg-emerald-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-emerald-700">Add</button>
+       </div>
+       <div id="packingList" class="space-y-2"></div>
+      </div>
+     </div><!-- Journal Page -->
+     <div id="page-journal" class="page hidden fade-in">
+      <h3 class="font-display text-2xl font-bold text-gray-800 mb-6">Trip Journal 📝</h3>
+      <div id="journalContent" class="space-y-4">
+       <p class="text-gray-400 text-sm text-center py-8">Trip notes will appear here from your trips.</p>
+      </div>
+     </div><!-- Shared Plans Page -->
+     <div id="page-shared" class="page hidden fade-in">
+      <h3 class="font-display text-2xl font-bold text-gray-800 mb-6">Shared Plans 🔗</h3>
+      <div id="sharedContent" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+       <p class="text-gray-400 text-sm col-span-full text-center py-8">No shared plans yet. Mark trips as shared to see them here.</p>
+      </div>
+     </div><!-- Profile Page -->
+     <div id="page-profile" class="page hidden fade-in">
+      <h3 class="font-display text-2xl font-bold text-gray-800 mb-6">Profile &amp; Settings ⚙️</h3>
+      <div class="bg-white rounded-xl border p-6 max-w-lg">
+       <div class="flex items-center gap-4 mb-6">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-2xl font-bold">
+         T
+        </div>
+        <div>
+         <h4 class="font-semibold text-lg">Traveler</h4>
+         <p class="text-sm text-gray-500">Explorer since 2024</p>
+        </div>
+       </div>
+       <div class="space-y-4">
+        <div class="flex justify-between items-center py-3 border-b">
+         <span class="text-sm text-gray-600">Email</span> <span class="text-sm font-medium">traveler@email.com</span>
+        </div>
+        <div class="flex justify-between items-center py-3 border-b">
+         <span class="text-sm text-gray-600">Trips Created</span> <span id="profileTrips" class="text-sm font-medium">0</span>
+        </div>
+        <div class="flex justify-between items-center py-3 border-b">
+         <span class="text-sm text-gray-600">Member Since</span> <span class="text-sm font-medium">2024</span>
+        </div>
+        <div class="flex justify-between items-center py-3">
+         <span class="text-sm text-gray-600">Theme</span> <span class="text-sm font-medium text-emerald-600">Default</span>
+        </div>
+       </div>
+      </div>
+     </div>
+    </main>
+   </div>
+  </div><!-- Toast Container -->
+  <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+  <script>
+// App state
+var allTrips = [];
+var packingItems = [];
+var currentPage = 'dashboard';
+
+// Cities data for explore
+var cities = [
+    { name: 'Paris', country: 'France', emoji: '🇫🇷', activities: ['Eiffel Tower', 'Louvre Museum', 'Seine Cruise', 'Montmartre Walk'], avgBudget: 150 },
+    { name: 'Tokyo', country: 'Japan', emoji: '🇯🇵', activities: ['Shibuya Crossing', 'Meiji Shrine', 'Tsukiji Market', 'Akihabara'], avgBudget: 120 },
+    { name: 'New York', country: 'USA', emoji: '🇺🇸', activities: ['Central Park', 'Times Square', 'Statue of Liberty', 'Broadway Show'], avgBudget: 200 },
+    { name: 'Bali', country: 'Indonesia', emoji: '🇮🇩', activities: ['Ubud Rice Terraces', 'Tanah Lot', 'Snorkeling', 'Monkey Forest'], avgBudget: 60 },
+    { name: 'London', country: 'UK', emoji: '🇬🇧', activities: ['Big Ben', 'Tower Bridge', 'British Museum', 'Hyde Park'], avgBudget: 180 },
+    { name: 'Dubai', country: 'UAE', emoji: '🇦🇪', activities: ['Burj Khalifa', 'Desert Safari', 'Dubai Mall', 'Palm Jumeirah'], avgBudget: 220 },
+    { name: 'Rome', country: 'Italy', emoji: '🇮🇹', activities: ['Colosseum', 'Vatican City', 'Trevi Fountain', 'Pasta Tour'], avgBudget: 130 },
+    { name: 'Bangkok', country: 'Thailand', emoji: '🇹🇭', activities: ['Grand Palace', 'Floating Market', 'Street Food', 'Wat Arun'], avgBudget: 45 },
+    { name: 'Sydney', country: 'Australia', emoji: '🇦🇺', activities: ['Opera House', 'Bondi Beach', 'Harbour Bridge', 'Blue Mountains'], avgBudget: 160 }
+];
+
+// Data SDK handler
+var dataHandler = {
+    onDataChanged: function(data) {
+        allTrips = data.filter(function(d) { return d.type === 'trip'; });
+        var packData = data.filter(function(d) { return d.type === 'packing'; });
+        packingItems = packData;
+        refreshUI();
+    }
+};
+
+// Initialize SDKs
+var defaultConfig = {
+    app_title: 'Traveloop',
+    tagline: 'Personalized Travel Planning Made Easy',
+    background_color: '#f9fafb',
+    surface_color: '#ffffff',
+    text_color: '#1f2937',
+    primary_color: '#059669',
+    secondary_color: '#fbbf24'
+};
+
+window.elementSdk.init({
+    defaultConfig: defaultConfig,
+    onConfigChange: async function(config) {
+        var title = config.app_title || defaultConfig.app_title;
+        var tagline = config.tagline || defaultConfig.tagline;
+        var bg = config.background_color || defaultConfig.background_color;
+        var surface = config.surface_color || defaultConfig.surface_color;
+        var textCol = config.text_color || defaultConfig.text_color;
+        var primary = config.primary_color || defaultConfig.primary_color;
+
+        document.getElementById('sidebarTitle').textContent = title;
+        document.getElementById('sidebarTagline').textContent = tagline;
+        document.getElementById('app').style.backgroundColor = bg;
+    },
+    mapToCapabilities: function(config) {
+        return {
+            recolorables: [
+                { get: function() { return config.background_color || defaultConfig.background_color; }, set: function(v) { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+                { get: function() { return config.surface_color || defaultConfig.surface_color; }, set: function(v) { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+                { get: function() { return config.text_color || defaultConfig.text_color; }, set: function(v) { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+                { get: function() { return config.primary_color || defaultConfig.primary_color; }, set: function(v) { config.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+                { get: function() { return config.secondary_color || defaultConfig.secondary_color; }, set: function(v) { config.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } }
+            ],
+            borderables: [],
+            fontEditable: {
+                get: function() { return config.font_family || 'DM Sans'; },
+                set: function(v) { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+            },
+            fontSizeable: {
+                get: function() { return config.font_size || 14; },
+                set: function(v) { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+            }
+        };
+    },
+    mapToEditPanelValues: function(config) {
+        return new Map([
+            ['app_title', config.app_title || defaultConfig.app_title],
+            ['tagline', config.tagline || defaultConfig.tagline]
+        ]);
+    }
+});
+
+(async function() {
+    var result = await window.dataSdk.init(dataHandler);
+    if (!result.isOk) {
+        showToast('Could not connect to storage', 'error');
+    }
+})();
+
+// Navigation
+function navigate(page) {
+    currentPage = page;
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.add('hidden'); });
+    var el = document.getElementById('page-' + page);
+    if (el) { el.classList.remove('hidden'); }
+
+    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+    var navEl = document.querySelector('[data-page="' + page + '"]');
+    if (navEl) navEl.classList.add('active');
+
+    var titles = { dashboard: 'Dashboard', create: 'Create Trip', trips: 'My Trips', explore: 'Explore Cities', budget: 'Budget Planner', packing: 'Packing List', journal: 'Trip Journal', shared: 'Shared Plans', profile: 'Profile' };
+    document.getElementById('pageTitle').textContent = titles[page] || 'Traveloop';
+
+    // Close sidebar on mobile
+    if (window.innerWidth < 1024) toggleSidebar();
+    refreshUI();
+}
+
+function toggleSidebar() {
+    var sb = document.getElementById('sidebar');
+    var ov = document.getElementById('mobileOverlay');
+    sb.classList.toggle('-translate-x-full');
+    ov.classList.toggle('hidden');
+}
+
+function toggleNotifications() {
+    var panel = document.getElementById('notifPanel');
+    panel.classList.toggle('hidden');
+}
+
+function clearNotifications() {
+    document.getElementById('notifList').innerHTML = '<p class="p-4 text-sm text-gray-400 text-center">No notifications</p>';
+    document.getElementById('notifBadge').classList.add('hidden');
+    toggleNotifications();
+}
+
+// Toast
+function showToast(msg, type) {
+    var container = document.getElementById('toastContainer');
+    var colors = type === 'error' ? 'bg-red-500' : 'bg-emerald-600';
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + colors + ' text-white px-4 py-3 rounded-lg shadow-lg text-sm max-w-xs';
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(function() { toast.remove(); }, 3000);
+}
+
+// Add notification dynamically
+function addNotification(msg, emoji) {
+    var list = document.getElementById('notifList');
+    var first = list.firstChild;
+    var item = document.createElement('div');
+    item.className = 'p-4 border-b hover:bg-gray-50 flex gap-3';
+    item.innerHTML = '<div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">' + emoji + '</div><div><p class="text-sm">' + msg + '</p><p class="text-xs text-gray-400 mt-1">Just now</p></div>';
+    list.insertBefore(item, first);
+    document.getElementById('notifBadge').classList.remove('hidden');
+}
+
+// Create trip
+document.getElementById('tripForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var name = document.getElementById('tripName').value.trim();
+    var dest = document.getElementById('tripDest').value.trim();
+    if (!name || !dest) { showToast('Please fill trip name and destination', 'error'); return; }
+
+    if (allTrips.length >= 999) { showToast('Maximum trips reached (999)', 'error'); return; }
+
+    var btn = document.getElementById('createBtn');
+    btn.disabled = true;
+    btn.textContent = 'Creating...';
+
+    var tripData = {
+        type: 'trip',
+        trip_name: name,
+        destination: dest,
+        start_date: document.getElementById('tripStart').value || '',
+        end_date: document.getElementById('tripEnd').value || '',
+        budget: parseFloat(document.getElementById('tripBudget').value) || 0,
+        status: 'planned',
+        notes: document.getElementById('tripNotes').value.trim(),
+        activities: document.getElementById('tripActivities').value.trim(),
+        packing_items: '',
+        shared: document.getElementById('tripShared').checked,
+        created_at: new Date().toISOString()
+    };
+
+    var result = await window.dataSdk.create(tripData);
+    btn.disabled = false;
+    btn.innerHTML = '<i data-lucide="plus" class="w-4 h-4"></i> Create Trip';
+    lucide.createIcons();
+
+    if (result.isOk) {
+        showToast('Trip created successfully!', 'success');
+        addNotification('New trip "' + name + '" created!', '✈️');
+        document.getElementById('tripForm').reset();
+        navigate('trips');
+    } else {
+        showToast('Failed to create trip', 'error');
+    }
+});
+
+// Packing list
+async function addPackingItem() {
+    var input = document.getElementById('packingInput');
+    var val = input.value.trim();
+    if (!val) return;
+
+    var totalItems = packingItems.length + allTrips.length;
+    if (totalItems >= 999) { showToast('Storage limit reached', 'error'); return; }
+
+    input.value = '';
+    var result = await window.dataSdk.create({ type: 'packing', trip_name: val, destination: '', start_date: '', end_date: '', budget: 0, status: 'unchecked', notes: '', activities: '', packing_items: '', shared: false, created_at: new Date().toISOString() });
+    if (result.isOk) {
+        showToast('Item added', 'success');
+    }
+}
+
+async function togglePackItem(id) {
+    var item = packingItems.find(function(i) { return i.__backendId === id; });
+    if (item) {
+        item.status = item.status === 'checked' ? 'unchecked' : 'checked';
+        await window.dataSdk.update(item);
+    }
+}
+
+async function deletePackItem(id) {
+    var item = packingItems.find(function(i) { return i.__backendId === id; });
+    if (item) { await window.dataSdk.delete(item); }
+}
+
+async function deleteTrip(id) {
+    var trip = allTrips.find(function(t) { return t.__backendId === id; });
+    if (trip) {
+        var result = await window.dataSdk.delete(trip);
+        if (result.isOk) {
+            showToast('Trip deleted', 'success');
+            addNotification('Trip "' + trip.trip_name + '" was removed', '🗑️');
+        }
+    }
+}
+
+// Render functions
+function refreshUI() {
+    // Stats
+    document.getElementById('statTrips').textContent = allTrips.length;
+    var uniqueCities = new Set(allTrips.map(function(t) { return t.destination; }));
+    document.getElementById('statCities').textContent = uniqueCities.size;
+    var totalBudget = allTrips.reduce(function(s, t) { return s + (t.budget || 0); }, 0);
+    document.getElementById('statBudget').textContent = '$' + totalBudget.toLocaleString();
+    var upcoming = allTrips.filter(function(t) { return t.start_date && new Date(t.start_date) > new Date(); }).length;
+    document.getElementById('statUpcoming').textContent = upcoming;
+    document.getElementById('profileTrips').textContent = allTrips.length;
+
+    // Recent trips on dashboard
+    var recent = document.getElementById('recentTrips');
+    if (allTrips.length === 0) {
+        recent.innerHTML = '<p class="text-gray-400 text-sm text-center py-8">No trips yet. Create your first trip!</p>';
+    } else {
+        recent.innerHTML = allTrips.slice(0, 5).map(function(t) {
+            var colors = ['from-blue-400 to-cyan-400', 'from-purple-400 to-pink-400', 'from-emerald-400 to-teal-400', 'from-amber-400 to-orange-400'];
+            var colorIdx = allTrips.indexOf(t) % colors.length;
+            return '<div class="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r ' + colors[colorIdx] + ' bg-opacity-10 border-l-4 border-opacity-50 hover:shadow-md transition"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg bg-gradient-to-br ' + colors[colorIdx] + ' bg-opacity-30 flex items-center justify-center text-lg font-bold">✈️</div><div><p class="text-sm font-bold text-gray-800">' + t.trip_name + '</p><p class="text-xs text-gray-600 font-semibold">📍 ' + t.destination + '</p></div></div><div class="text-right"><span class="text-xs font-bold bg-white bg-opacity-60 px-2.5 py-1 rounded-full text-gray-700">' + (t.status || 'planned').toUpperCase() + '</span></div></div>';
+        }).join('');
+    }
+
+    // Trips list
+    var tripsList = document.getElementById('tripsList');
+    if (allTrips.length === 0) {
+        tripsList.innerHTML = '<p class="text-gray-400 text-sm col-span-full text-center py-12">No trips found. Start planning!</p>';
+    } else {
+        tripsList.innerHTML = allTrips.map(function(t) {
+            var days = '';
+            if (t.start_date && t.end_date) {
+                var d = Math.ceil((new Date(t.end_date) - new Date(t.start_date)) / 86400000);
+                days = d + ' days';
+            }
+            var colors = ['from-blue-100 to-cyan-100', 'from-purple-100 to-pink-100', 'from-emerald-100 to-teal-100', 'from-amber-100 to-orange-100', 'from-rose-100 to-pink-100'];
+            var colorIdx = allTrips.indexOf(t) % colors.length;
+            var statusColors = {'planned': 'bg-blue-100 text-blue-700', 'ongoing': 'bg-amber-100 text-amber-700', 'completed': 'bg-emerald-100 text-emerald-700'};
+            var statusColor = statusColors[t.status] || 'bg-gray-100 text-gray-700';
+            return '<div class="trip-card bg-gradient-to-br ' + colors[colorIdx] + ' rounded-xl p-5 card-hover border-2 border-opacity-50"><div class="flex justify-between items-start mb-3"><div><h4 class="font-bold text-gray-800 text-lg">' + t.trip_name + '</h4><p class="text-sm text-gray-600 flex items-center gap-1 mt-1">📍 ' + t.destination + '</p></div><button onclick="deleteTrip(\'' + t.__backendId + '\')" class="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>' + (days ? '<p class="text-xs text-gray-600 mb-3 font-semibold">⏱️ ' + days + ' • ' + (t.start_date || '') + '</p>' : '') + '<div class="flex items-center justify-between"><span class="text-lg font-bold text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text">$' + (t.budget || 0) + '</span><span class="text-xs font-bold ' + statusColor + ' px-3 py-1 rounded-full">' + (t.status || 'planned').toUpperCase() + '</span></div></div>';
+        }).join('');
+    }
+
+    // Budget page
+    var budgetEl = document.getElementById('budgetContent');
+    if (allTrips.length === 0) {
+        budgetEl.innerHTML = '<p class="text-gray-400 text-sm text-center py-8">Create trips to see budget breakdown here.</p>';
+    } else {
+        var html = '<div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border-2 border-emerald-200 p-6 mb-4 card-hover"><div class="flex justify-between items-center mb-4"><h4 class="font-bold text-lg text-gray-800">💰 Total Planned Budget</h4><span class="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">$' + totalBudget.toLocaleString() + '</span></div><div class="space-y-4">';
+        allTrips.forEach(function(t) {
+            var pct = totalBudget > 0 ? ((t.budget || 0) / totalBudget * 100).toFixed(0) : 0;
+            var colors = ['from-blue-400 to-cyan-400', 'from-purple-400 to-pink-400', 'from-emerald-400 to-teal-400', 'from-amber-400 to-orange-400'];
+            var colorIdx = allTrips.indexOf(t) % colors.length;
+            html += '<div class="bg-white rounded-lg p-4 border border-gray-100"><div class="flex justify-between text-sm mb-2"><span class="font-bold text-gray-700">' + t.destination + '</span><span class="font-bold bg-gradient-to-r ' + colors[colorIdx] + ' bg-clip-text text-transparent">$' + (t.budget || 0) + '</span></div><div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden"><div class="progress-bar h-3 rounded-full bg-gradient-to-r ' + colors[colorIdx] + '" style="--progress-width:' + pct + '%"></div></div><p class="text-xs text-gray-500 mt-1 font-semibold">' + pct + '% of total</p></div>';
+        });
+        html += '</div></div>';
+        budgetEl.innerHTML = html;
+    }
+
+    // Packing list
+    var packEl = document.getElementById('packingList');
+    if (packingItems.length === 0) {
+        packEl.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">No items yet. Start adding! 🎒</p>';
+    } else {
+        packEl.innerHTML = packingItems.map(function(item) {
+            var checked = item.status === 'checked';
+            var idx = Math.random();
+            return '<div class="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-white to-emerald-50 hover:from-emerald-50 hover:to-teal-50 border-2 border-emerald-100 transition"><label class="flex items-center gap-3 cursor-pointer flex-1"><input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="togglePackItem(\'' + item.__backendId + '\')" class="w-4 h-4 text-emerald-600 rounded accent-emerald-600"><span class="text-sm font-semibold ' + (checked ? 'line-through text-gray-400' : 'text-gray-700') + '">' + item.trip_name + '</span></label><button onclick="deletePackItem(\'' + item.__backendId + '\')" class="text-gray-300 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition"><i data-lucide="x" class="w-4 h-4"></i></button></div>';
+        }).join('');
+    }
+
+    // Journal
+    var journalEl = document.getElementById('journalContent');
+    var tripsWithNotes = allTrips.filter(function(t) { return t.notes; });
+    if (tripsWithNotes.length === 0) {
+        journalEl.innerHTML = '<p class="text-gray-400 text-sm text-center py-8">Trip notes will appear here from your trips.</p>';
+    } else {
+        journalEl.innerHTML = tripsWithNotes.map(function(t) {
+            var colors = ['from-blue-50 to-cyan-50', 'from-purple-50 to-pink-50', 'from-emerald-50 to-teal-50', 'from-amber-50 to-orange-50'];
+            var colorIdx = allTrips.indexOf(t) % colors.length;
+            return '<div class="bg-gradient-to-br ' + colors[colorIdx] + ' rounded-xl border-2 border-opacity-30 p-5 card-hover"><div class="flex items-center gap-2 mb-3"><span class="text-3xl">📝</span><div><h4 class="font-bold text-gray-800">' + t.trip_name + '</h4><p class="text-xs text-gray-600 font-semibold">📍 ' + t.destination + '</p></div></div><p class="text-sm text-gray-700 leading-relaxed bg-white bg-opacity-60 p-3 rounded-lg border border-opacity-30">' + t.notes + '</p><p class="text-xs text-gray-500 mt-3 font-semibold">📅 ' + (t.start_date || 'No date') + '</p></div>';
+        }).join('');
+    }
+
+    // Shared
+    var sharedEl = document.getElementById('sharedContent');
+    var sharedTrips = allTrips.filter(function(t) { return t.shared; });
+    if (sharedTrips.length === 0) {
+        sharedEl.innerHTML = '<p class="text-gray-400 text-sm col-span-full text-center py-8">No shared plans yet.</p>';
+    } else {
+        sharedEl.innerHTML = sharedTrips.map(function(t) {
+            var colors = ['from-blue-50 to-cyan-50', 'from-purple-50 to-pink-50', 'from-emerald-50 to-teal-50', 'from-amber-50 to-orange-50'];
+            var colorIdx = allTrips.indexOf(t) % colors.length;
+            return '<div class="bg-gradient-to-br ' + colors[colorIdx] + ' rounded-xl border-2 border-opacity-40 p-5 card-hover"><div class="flex items-center gap-2 mb-3"><span class="text-3xl">🔗</span><h4 class="font-bold text-gray-800">' + t.trip_name + '</h4></div><p class="text-sm text-gray-700 font-semibold mb-1">📍 ' + t.destination + '</p><p class="text-xs text-gray-600 mb-3">Budget: <span class="font-bold text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text">$' + (t.budget || 0) + '</span></p>' + (t.activities ? '<div class="flex flex-wrap gap-1.5">' + t.activities.split(',').slice(0,3).map(function(a){ return '<span class="text-xs font-bold bg-white bg-opacity-60 text-gray-700 px-2.5 py-1 rounded-full border border-opacity-30">' + a.trim() + '</span>'; }).join('') + '</div>' : '') + '</div>';
+        }).join('');
+    }
+
+    // Re-render icons
+    lucide.createIcons();
+}
+
+// Explore cities
+function renderCities(list) {
+    var grid = document.getElementById('cityGrid');
+    grid.innerHTML = list.map(function(c) {
+        return '<div class="city-card rounded-xl p-5 card-hover"><div class="flex items-center gap-3 mb-3"><span class="text-4xl">' + c.emoji + '</span><div><h4 class="font-bold text-gray-800">' + c.name + '</h4><p class="text-xs text-gray-500 font-semibold">' + c.country + '</p></div></div><p class="text-sm font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent mb-3">💵 $' + c.avgBudget + '/day</p><div class="flex flex-wrap gap-1.5 mb-3">' + c.activities.map(function(a) { return '<span class="text-xs font-bold bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-300">' + a + '</span>'; }).join('') + '</div><button onclick="quickAddFromCity(\'' + c.name + '\')" class="w-full text-center text-sm font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-2.5 rounded-lg hover:shadow-lg transition">+ Add to Trip</button></div>';
+    }).join('');
+}
+
+function filterCities() {
+    var q = document.getElementById('citySearch').value.toLowerCase();
+    var filtered = cities.filter(function(c) { return c.name.toLowerCase().indexOf(q) > -1 || c.country.toLowerCase().indexOf(q) > -1; });
+    renderCities(filtered);
+}
+
+function quickAddFromCity(city) {
+    document.getElementById('tripDest').value = city;
+    navigate('create');
+    showToast(city + ' added as destination', 'success');
+}
+
+// Init explore
+renderCities(cities);
+lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f95e0a4201f3a48',t:'MTc3ODM4Mzk1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
