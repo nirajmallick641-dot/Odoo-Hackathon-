@@ -360,9 +360,45 @@ Currency Converter
         <div>
          <label for="tripDest" class="block text-sm font-medium text-gray-700 mb-1">Destination City</label> <input type="text" id="tripDest" placeholder="Paris, Tokyo, Bali..." class="w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
         </div>
-        <div>
-         <label for="tripBudget" class="block text-sm font-medium text-gray-700 mb-1">Budget ($)</label> <input type="number" id="tripBudget" placeholder="2000" class="w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none">
-        </div>
+       <div>
+    <label for="tripBudget" class="block text-sm font-medium text-gray-700 mb-1">
+        Trip Budget 💰
+    </label>
+
+    <div class="flex gap-2">
+
+        <!-- Budget Input -->
+        <input
+            type="number"
+            id="tripBudget"
+            placeholder="2000"
+            oninput="updateBudgetConversion()"
+            class="flex-1 border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+        >
+
+        <!-- Currency Select -->
+        <select
+            id="tripCurrency"
+            onchange="updateBudgetConversion()"
+            class="border rounded-lg px-3 py-2.5 text-sm bg-white"
+        >
+            <option value="USD">🇺🇸 USD</option>
+            <option value="INR">🇮🇳 INR</option>
+            <option value="EUR">🇪🇺 EUR</option>
+            <option value="GBP">🇬🇧 GBP</option>
+            <option value="JPY">🇯🇵 JPY</option>
+        </select>
+
+    </div>
+
+    <!-- Conversion Result -->
+    <div
+        id="budgetConversion"
+        class="text-xs text-emerald-600 mt-2 font-medium"
+    >
+        Conversion will appear here
+    </div>
+</div>
        </div>
        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
@@ -692,7 +728,8 @@ document.getElementById('tripForm').addEventListener('submit', async function(e)
         destination: dest,
         start_date: document.getElementById('tripStart').value || '',
         end_date: document.getElementById('tripEnd').value || '',
-        budget: parseFloat(document.getElementById('tripBudget').value) || 0,
+   budget: parseFloat(document.getElementById('tripBudget').value) || 0,
+currency: document.getElementById('tripCurrency').value,
         status: 'planned',
         notes: document.getElementById('tripNotes').value.trim(),
         activities: document.getElementById('tripActivities').value.trim(),
@@ -875,58 +912,46 @@ function quickAddFromCity(city) {
     navigate('create');
     showToast(city + ' added as destination', 'success');
 }
-  async function convertCurrency() {
+  async function updateBudgetConversion() {
 
     var amount =
-        document.getElementById('currencyAmount').value;
+        document.getElementById('tripBudget').value;
 
-    var from =
-        document.getElementById('fromCurrency').value;
+    var currency =
+        document.getElementById('tripCurrency').value;
 
-    var to =
-        document.getElementById('toCurrency').value;
-
-    var resultBox =
-        document.getElementById('currencyResult');
+    var result =
+        document.getElementById('budgetConversion');
 
     if (!amount || amount <= 0) {
 
-        resultBox.innerHTML =
-            '⚠️ Enter valid amount';
+        result.innerHTML =
+            'Converted amount will appear in INR';
 
         return;
     }
 
     try {
 
-        resultBox.innerHTML =
-            '⏳ Converting...';
-
+        // Fetch rates FROM selected currency
         var response = await fetch(
-            'https://api.exchangerate-api.com/v4/latest/' + from
+            'https://api.exchangerate-api.com/v4/latest/' + currency
         );
 
         var data = await response.json();
 
-        var rate = data.rates[to];
+        // Convert EVERYTHING to INR
+        var inrAmount =
+            (amount * data.rates['INR']).toFixed(2);
 
-        var converted =
-            (amount * rate).toFixed(2);
-
-        resultBox.innerHTML =
-            '💱 ' +
-            amount + ' ' + from +
-            ' = ' +
-            converted + ' ' + to;
-
-        showToast('Currency converted!', 'success');
+        // Show result
+        result.innerHTML =
+            '🇮🇳 Approx INR Value: ₹' + inrAmount;
 
     } catch (error) {
 
-        resultBox.innerHTML =
-            '❌ Conversion failed';
-
-        showToast('API Error', 'error');
+        result.innerHTML =
+            '⚠️ Conversion unavailable';
 
         console.log(error);
     }
